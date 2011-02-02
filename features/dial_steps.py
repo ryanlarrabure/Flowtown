@@ -18,7 +18,7 @@ class OpenVBX_Connection:
         # Cookie handler and HTTP opener object
 
         self.cj = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 
 
 

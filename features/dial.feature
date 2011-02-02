@@ -44,6 +44,7 @@ Feature: OpenVBX Dial Applet
         Given I have accessed flow "2"
         When I handle a redirect
         And I set param "DialCallStatus" to "busy"
+        And I follow the action
         And I handle a redirect
         Then I should see a "Hangup" element
 
@@ -51,6 +52,7 @@ Feature: OpenVBX Dial Applet
         Given I have accessed flow "2"
         When I handle a redirect
         And I set param "DialCallStatus" to "completed"
+        And I follow the action
         And I handle a redirect
         Then I should see a "Hangup" element
 
@@ -58,6 +60,7 @@ Feature: OpenVBX Dial Applet
         Given I have accessed flow "2"
         When I handle a redirect
         And I set param "DialCallStatus" to "no-answer"
+        And I follow the action
         And I handle a redirect
         Then I should see a "Hangup" element
 
@@ -71,7 +74,7 @@ Feature: OpenVBX Dial Applet
         When I handle a redirect
         And I set param "DialCallStatus" to "failed"
         And I follow the action
-        And I should see "Say" is "Please leave a message."
+        Then I should see "Say" is "Please leave a message."
 
     Scenario: Dial a user with multiple devices, Flow 11
         Given I have accessed flow "11"
@@ -80,9 +83,17 @@ Feature: OpenVBX Dial Applet
         When I follow the action
         Then I should see "Number" is "15343562222"
         When I follow the action
-        And I should see "Say" is "Please leave a message."
+        Then I should see "Say" is "Please leave a message."
 
     Scenario: Dial a group with two users with two devices, Flow 12
         Given I have accessed flow "12"
-        When I debug
-
+        When I handle a redirect
+        Then I should see "Number" is "15551112222"
+        When I follow the action
+        Then I should see "Number" is "15343562222"
+        When I follow the action
+        Then I should see "Number" is "15552223333"
+        When I follow the action
+        Then I should see "Number" is "12354567788"
+        When I follow the action
+        Then I should see "Say" is "Please leave a message."

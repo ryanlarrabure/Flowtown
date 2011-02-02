@@ -13,6 +13,7 @@ class OpenVBX_Connection:
     def __init__ (self):
         self.con = None
         self.current_page = None
+        self.current_url = None
         self.outgoing_data = dict() # Data to be sent in the next request
 
         # Cookie handler and HTTP opener object
@@ -94,8 +95,10 @@ def assert_open_and_read(url, expectData=True):
     try:
         if not ovbx.outgoing_data:
             ovbx.con = ovbx.opener.open(url)
+            ovbx.current_url = url
         else:
             ovbx.con = ovbx.opener.open(url, urllib.urlencode(ovbx.outgoing_data))
+            ovbx.current_url = url
             ovbx.outgoing_data = dict()
     except IOError as io_error:
         assert ovbx.con, "Error in opening %s: %s" % (io_error, url)

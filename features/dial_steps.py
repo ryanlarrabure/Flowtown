@@ -38,8 +38,6 @@ def load_mysql_database(filename):
 
 @before.all
 def before_all():
-    global cj # CookieJar Object
-    global opener # urllib2 opener object
 
     # Dump the database
 
@@ -57,24 +55,14 @@ def before_all():
     temp_file.flush()
     temp_file.close()
 
-    # Setup the cookie handler
-
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
 @after.all
 def after_all(total):
 
     # We load the backed up database, and destroy the cookiejar and urllib2
     # opener object
 
-    global cj
-    global opener
-
     load_mysql_database(Config.MySQL.backup_file)
 
-    cj = None
-    opener = None
 
 @before.each_scenario
 def before_each_scenario(scenario):
@@ -82,8 +70,9 @@ def before_each_scenario(scenario):
     # Setup our OpenVBX data holder
 
     global ovbx
-    global cj
-    global opener
+
+    global cj # Cookie jar object
+    global opener #urllib2 opener object
    
     ovbx = OpenVBX_Connection() 
     
@@ -95,12 +84,16 @@ def before_each_scenario(scenario):
 
 @after.each_scenario
 def after_each_scenario(scenario):
-
-    # Destroy our OpenVBX data holder
-
     global ovbx
+    global cj
+    global opener
 
-    ovbx = None
+    ovbx = None # Destroy our OpenVBX container
+
+    # Destroy our cookie and handler objects
+
+    opener = None
+    cj = None
 
 
 def assert_open_and_read(url, expectData=True):

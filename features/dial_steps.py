@@ -15,6 +15,11 @@ class OpenVBX_Connection:
         self.current_page = None
         self.outgoing_data = dict() # Data to be sent in the next request
 
+        # Cookie handler and HTTP opener object
+
+        self.cj = cookielib.CookieJar()
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+
 
 
 def load_mysql_database(filename):
@@ -57,11 +62,7 @@ def before_all():
 
 @after.all
 def after_all(total):
-
-    # We load the backed up database, and destroy the cookiejar and urllib2
-    # opener object
-
-    load_mysql_database(Config.MySQL.backup_file)
+    load_mysql_database(Config.MySQL.backup_file) # Load the backed up database
 
 
 @before.each_scenario
@@ -71,29 +72,14 @@ def before_each_scenario(scenario):
 
     global ovbx
 
-    global cj # Cookie jar object
-    global opener #urllib2 opener object
-   
     ovbx = OpenVBX_Connection() 
     
-    # Setup the cookie handler
-
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-
 
 @after.each_scenario
 def after_each_scenario(scenario):
     global ovbx
-    global cj
-    global opener
 
     ovbx = None # Destroy our OpenVBX container
-
-    # Destroy our cookie and handler objects
-
-    opener = None
-    cj = None
 
 
 def assert_open_and_read(url, expectData=True):
@@ -106,9 +92,9 @@ def assert_open_and_read(url, expectData=True):
         ovbx.con = None
     try:
         if not ovbx.outgoing_data:
-            ovbx.con = opener.open(url)
+            ovbx.con = ovbx.opener.open(url)
         else:
-            ovbx.con = opener.open(url, urllib.urlencode(ovbx.outgoing_data))
+            ovbx.con = ovbx.opener.open(url, urllib.urlencode(ovbx.outgoing_data))
             ovbx.outgoing_data = dict()
     except IOError as io_error:
         assert ovbx.con, "Error in opening %s: %s" % (io_error, url)
@@ -166,7 +152,7 @@ def i_debug (step):
 
     # Set these locally so they are easy to access
 
-    cookie_jar = cj
+    cookie_jar = ovbx.cj
     current_page = ovbx.current_page
     root = etree.XML(ovbx.current_page)
 

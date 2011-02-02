@@ -51,10 +51,11 @@ def before_all():
 
     if not Config.MySQL.password:
         args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user,
-                Config.MySQL.database, 'flows']
+                Config.MySQL.database, 'flows', 'users', 'numbers']
     else:
         args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user, '-p%s' %
-                Config.MySQL.password, Config.MySQL.database, 'flows']
+                Config.MySQL.password, Config.MySQL.database, 'flows', 'users',
+                'numbers']
     proc = subprocess.Popen(args, stdout=temp_file)
 
     temp_file.flush()
@@ -154,7 +155,7 @@ def i_debug (step):
 
     cookie_jar = ovbx.cj
     current_page = ovbx.current_page
-    root = etree.XML(ovbx.current_page)
+    #root = etree.XML(ovbx.current_page)
 
     for cookie in cookie_jar: # So we can see each cookie
         import pdb

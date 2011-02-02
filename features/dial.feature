@@ -21,7 +21,7 @@ Feature: OpenVBX Dial Applet
         When I handle a redirect
         Then I should see "Number" is "15105555555"
         When I follow the action
-        Then I should see "Number" is "15105555555"
+        Then I should see "Number" is "15105555556"
         When I follow the action
         Then I should see "Say" is "Please leave a message."
         And I should see a "Record" element

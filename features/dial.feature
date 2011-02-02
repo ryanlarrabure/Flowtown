@@ -61,3 +61,15 @@ Feature: OpenVBX Dial Applet
         And I handle a redirect
         Then I should see a "Hangup" element
 
+    Scenario: Dial a group with no users, Flow 9
+        Given I have accessed flow "9"
+        When I handle a redirect
+        Then I should see "Say" is "Please leave a message."
+
+    Scenario: Dial a single user with no devices, Flow 10
+        Given I have accessed flow "10"
+        When I handle a redirect
+        And I set param "DialCallStatus" to "failed"
+        And I follow the action
+        And I should see "Say" is "Please leave a message."
+

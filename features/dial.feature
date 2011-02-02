@@ -5,6 +5,7 @@ Feature: OpenVBX Dial Applet
 
         When I handle a redirect
         Then I should see "Number" is "15105555555"
+
         When I follow the action
 
         And I handle a redirect
@@ -15,6 +16,7 @@ Feature: OpenVBX Dial Applet
 
         When I handle a redirect
         Then I should see "Number" is "15105555555"
+
         When I follow the action
 
         And I handle a redirect

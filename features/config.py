@@ -12,7 +12,8 @@ class Config:
 
     class MySQL:
 
-        dump_path = 'mysqldump'
+        dump_path = 'mysqldump' # Not used at the moment
+        host ='' # This isn't used either
         user = 'root'
         password = ''
         mysql = 'mysql'

@@ -50,13 +50,13 @@ def before_all():
     args = []
     temp_file = open(Config.MySQL.backup_file, 'w')
 
-    if not Config.MySQL.password:
-        args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user,
-                Config.MySQL.database, 'flows', 'users', 'numbers']
-    else:
-        args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user, '-p%s' %
-                Config.MySQL.password, Config.MySQL.database, 'flows', 'users',
-                'numbers']
+    args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user]
+    if Config.MySQL.password:
+        args += ['-p%s' % Config.MySQL.password]
+    if Config.MySQL.host:
+        args += ['--host=%s' % Config.MySQL.host]
+    args += [Config.MySQL.database]
+    args += ['flows', 'users', 'numbers'] # Add the tables
     proc = subprocess.Popen(args, stdout=temp_file)
 
     temp_file.flush()

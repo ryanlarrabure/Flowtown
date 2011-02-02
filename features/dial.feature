@@ -73,3 +73,16 @@ Feature: OpenVBX Dial Applet
         And I follow the action
         And I should see "Say" is "Please leave a message."
 
+    Scenario: Dial a user with multiple devices, Flow 11
+        Given I have accessed flow "11"
+        When I handle a redirect
+        Then I should see "Number" is "15551112222"
+        When I follow the action
+        Then I should see "Number" is "15343562222"
+        When I follow the action
+        And I should see "Say" is "Please leave a message."
+
+    Scenario: Dial a group with two users with two devices, Flow 12
+        Given I have accessed flow "12"
+        When I debug
+

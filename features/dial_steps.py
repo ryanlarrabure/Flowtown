@@ -76,15 +76,21 @@ def after_all(total):
     cj = None
     opener = None
 
-
 @before.each_scenario
 def before_each_scenario(scenario):
 
     # Setup our OpenVBX data holder
 
     global ovbx
+    global cj
+    global opener
    
     ovbx = OpenVBX_Connection() 
+    
+    # Setup the cookie handler
+
+    cj = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
 
 @after.each_scenario

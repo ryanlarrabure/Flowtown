@@ -212,3 +212,8 @@ def i_access_the_transcribe_callback(step):
 @step('I set param "(.*)" to "(.*)"')
 def i_set_param_blank_to_blank(step, param, value):
    ovbx.outgoing_data.update({param:value}) 
+
+@step('I press "(.*)"')
+def i_press_blank(step, number):
+    ovbx.outgoing_data.update({"Digits":number})
+    assert_open_and_read(ovbx.current_url)

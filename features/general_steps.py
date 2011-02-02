@@ -190,10 +190,10 @@ def make_transcribe_parameters():
     # This may or may not have to be elaborated on for the purposes of the
     # tests.
 
-    return dict({'TranscriptionText':'NOT_FILLED',
+    return dict({'TranscriptionText':'NOT_VALID',
                  'TranscriptionStatus':'completed',
-                 'TranscriptionUrl':'NOT_FILLED',
-                 'RecordingUrl':'NOT_FILLED'})
+                 'TranscriptionUrl':'NOT_VALID',
+                 'RecordingUrl':'NOT_VALID'})
 
 
 @step('I access the transcribe callback')

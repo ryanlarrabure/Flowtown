@@ -5,10 +5,13 @@ Feature: OpenVBX Menu Applet
 
     Scenario: Menu with 0 item, Flow 14
         Given I have accessed flow "14"
+
         When I handle a redirect
 
     Scenario: Menu with 1 item, Flow 15
         Given I have accessed flow "15"
+
         When I handle a redirect
         And I press "1"
+
         Then I debug

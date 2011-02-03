@@ -17,5 +17,5 @@ class Config:
         user = 'root'
         password = ''
         mysql = 'mysql'
-        database = 'OpenVBX'
+        database = 'vbx2008'
         backup_file = 'flows_backup.sql'

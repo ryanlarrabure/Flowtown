@@ -27,8 +27,8 @@ Feature: OpenVBX Menu Applet
         When I handle a redirect
         Then I should see "Say" is "Item 3"
 
-    Scenario: More than 10 items, Flow 24
-        Given I have accessed flow "24"
+    Scenario: More than 10 items, Flow 23 
+        Given I have accessed flow "23"
 
         When I handle a redirect
         Then I press "11"
@@ -36,8 +36,8 @@ Feature: OpenVBX Menu Applet
         When I handle a redirect
         Then I should see "Say" is "Item 11"
 
-    Scenario: Redirect to voicemail, Flow 25
-        Given I have accessed flow "25"
+    Scenario: Redirect to voicemail, Flow 24
+        Given I have accessed flow "24"
 
         When I handle a redirect
         Then I press "1"
@@ -45,16 +45,16 @@ Feature: OpenVBX Menu Applet
         When I handle a redirect
         Then I should see a "Record" element
 
-    Scenario: Handle Oops, Flow 26
-        Given I have accessed flow "26"
+    Scenario: Handle Oops, Flow 25
+        Given I have accessed flow "25"
 
         When I handle a redirect
         Then I press "2"
 
         Then I should see "Say" is "Oops fired"
 
-    Scenario: Empty menu applet, Flow 27
-        Given I have accessed flow "27"
+    Scenario: Empty menu applet, Flow 26
+        Given I have accessed flow "26"
 
         When I handle a redirect
         Then I should see a "Gather" element
@@ -66,8 +66,8 @@ Feature: OpenVBX Menu Applet
         Then I press "1"
         And I should see "Say" is "You selected an incorrect option."
 
-    Scenario: Handle 7, 77, and 777 as menu numbers
-        Given I have accessed flow "29"
+    Scenario: Handle 7, 77, and 777 as menu numbers, Flows 27
+        Given I have accessed flow "27"
 
         When I handle a redirect
         Then I press "777"

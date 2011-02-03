@@ -13,4 +13,3 @@ Feature: Voicemail Applet
         When I handle a redirect
         Then I should see "Say" is "I'm reading text like a robot."
         And I should see a "Record" element
-        And I debug

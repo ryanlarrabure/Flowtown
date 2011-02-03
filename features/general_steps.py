@@ -56,7 +56,6 @@ def before_all():
     if Config.MySQL.host:
         args += ['--host=%s' % Config.MySQL.host]
     args += [Config.MySQL.database]
-    args += ['flows', 'users', 'numbers'] # Add the tables
     proc = subprocess.Popen(args, stdout=temp_file)
 
     temp_file.flush()
@@ -215,5 +214,6 @@ def i_set_param_blank_to_blank(step, param, value):
 
 @step('I press "(.*)"')
 def i_press_blank(step, number):
+    ovbx.outgoing_data.update(make_twilio_parameters())
     ovbx.outgoing_data.update({"Digits":number})
     assert_open_and_read(ovbx.current_url)

@@ -98,18 +98,26 @@ def assert_open_and_read(url, expectData=True):
         if not ovbx.outgoing_data:
             request = urllib2.Request(url)
             if ovbx.outgoing_headers:
-                for header, value in ovbx.outgoing_headers.keys(), \
-                                     ovbx.outgoing_headers.values():
-                    request.add_header(header, value)
+                if len(ovbx.outgoing_headers) > 1:
+                    for header, value in ovbx.outgoing_headers.keys(), \
+                                         ovbx.outgoing_headers.values():
+                        request.add_header(header, value)
+                else:
+                    request.add_header(ovbx.outgoing_headers.keys()[0],
+                                       ovbx.outgoing_headers.values()[0])
                 ovbx.outgoing_headers = dict()
             ovbx.con = ovbx.opener.open(request)
             ovbx.current_url = url
         else:
             request = urllib2.Request(url)
             if ovbx.outgoing_headers:
-                for header, value in ovbx.outgoing_headers.keys(), \
-                                     ovbx.outgoing_headers.values():
-                    request.add_header(header, value)
+                if len(ovbx.outgoing_headers) > 1:
+                    for header, value in ovbx.outgoing_headers.keys(), \
+                                         ovbx.outgoing_headers.values():
+                        request.add_header(header, value)
+                else:
+                    request.add_header(ovbx.outgoing_headers.keys()[0],
+                                       ovbx.outgoing_headers.values()[0])
                 ovbx.outgoing_headers = dict()
             ovbx.con = ovbx.opener.open(request,
                 urllib.urlencode(ovbx.outgoing_data))
@@ -270,12 +278,12 @@ def i_text_blank(step, text, flow_number):
 
 @step('I check the inbox')
 def i_check_the_inbox(step):
-    ovbx.outgoing_headers.update(dict({'Accepts':'application/json'}))
+    ovbx.outgoing_headers.update(dict({'Accept':'application/json'}))
 
-    # I could probably do this with urllib2
+    auth_handler = urllib2.HTTPBasicAuthHandler()
+    auth_handler.add_password(None, Config.Web.host, Config.Web.username,
+    Config.Web.password)
+    opener = urllib2.build_opener(auth_handler)
+    urllib2.install_opener(opener)
 
-    enc = base64.encodestring('%s:%s' % (Config.Web.username, 
-                                         Config.Web.password)).replace('\n', '')
-    ovbx.outgoing_headers.update(dict({"Authorization":"Basic %s" % enc}))   
-    
     assert_open_and_read("%s/messages/inbox" % Config.Web.host)

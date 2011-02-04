@@ -8,6 +8,8 @@ class Config:
     class Web:
 
         host = 'http://vbxdev.local.twilio.com'
+        username = 'ryan+openvbxtest@twilio.com'
+        password = 'testing'
 
 
     class MySQL:

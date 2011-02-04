@@ -2,6 +2,7 @@ import urllib2
 import urllib
 import cookielib
 import subprocess
+import base64
 
 from lxml import etree
 from lettuce import after, step, before
@@ -15,6 +16,7 @@ class OpenVBX_Connection:
         self.current_page = None
         self.current_url = None
         self.outgoing_data = dict() # Data to be sent in the next request
+        self.outgoing_headers = dict()
 
         # Cookie handler and HTTP opener object
 
@@ -61,6 +63,7 @@ def before_all():
     temp_file.flush()
     temp_file.close()
 
+
 @after.all
 def after_all(total):
     load_mysql_database(Config.MySQL.backup_file) # Load the backed up database
@@ -93,10 +96,23 @@ def assert_open_and_read(url, expectData=True):
         ovbx.con = None
     try:
         if not ovbx.outgoing_data:
-            ovbx.con = ovbx.opener.open(url)
+            request = urllib2.Request(url)
+            if ovbx.outgoing_headers:
+                for header, value in ovbx.outgoing_headers.keys(), \
+                                     ovbx.outgoing_headers.values():
+                    request.add_header(header, value)
+                ovbx.outgoing_headers = dict()
+            ovbx.con = ovbx.opener.open(request)
             ovbx.current_url = url
         else:
-            ovbx.con = ovbx.opener.open(url, urllib.urlencode(ovbx.outgoing_data))
+            request = urllib2.Request(url)
+            if ovbx.outgoing_headers:
+                for header, value in ovbx.outgoing_headers.keys(), \
+                                     ovbx.outgoing_headers.values():
+                    request.add_header(header, value)
+                ovbx.outgoing_headers = dict()
+            ovbx.con = ovbx.opener.open(request,
+                urllib.urlencode(ovbx.outgoing_data))
             ovbx.current_url = url
             ovbx.outgoing_data = dict()
     except IOError as io_error:
@@ -146,8 +162,16 @@ def i_should_see_blank_is_blank(step, element, value):
             return
         elif element.text.find(value):
             return
-    current_page = ovbx.current_page
     assert False, 'No "%s" element with text: "%s"' % (element, value)
+
+
+@step('I should see "(.*)" is empty')
+def i_should_see_blank_is_empty(step, element):
+    root = etree.XML(ovbx.current_page)
+    for element in root.xpath('//%s' % element):
+        if not element.text:
+            return
+    assert False, 'No "%s" element is empty' % element 
 
 
 @step('I debug')
@@ -212,8 +236,46 @@ def i_access_the_transcribe_callback(step):
 def i_set_param_blank_to_blank(step, param, value):
    ovbx.outgoing_data.update({param:value}) 
 
+
 @step('I press "(.*)"')
 def i_press_blank(step, number):
     ovbx.outgoing_data.update(make_twilio_parameters())
     ovbx.outgoing_data.update({"Digits":number})
     assert_open_and_read(ovbx.current_url)
+
+
+def make_SMS_parameters():
+    return dict({'SmsSid':'NOT_VALID',
+                 'AccountSid':'NOT_VALID',
+                 'From':'+15555555555',
+                 'To':'+15555555555',
+                 'Body':'NOT_VALID'})
+
+
+@step('I have SMS accessed flow "(.*)"')
+def i_have_SMS_accessed_flow_blank(step, flow_number):
+    ovbx.outgoing_data.update(make_SMS_parameters())
+    flow_number = int(flow_number)
+    page = "%s/twiml/applet/sms/%d/start" % (Config.Web.host, flow_number)
+    assert_open_and_read(page)
+
+
+@step('I text "(.*)" to flow "(.*)"')
+def i_text_blank(step, text, flow_number):
+    ovbx.outgoing_data.update(make_SMS_parameters())
+    flow_number = int(flow_number)
+    page = "%s/twiml/applet/sms/%d/start" % (Config.Web.host, flow_number)
+    ovbx.outgoing_data.update(dict(Body=text))
+    assert_open_and_read(page)
+
+@step('I check the inbox')
+def i_check_the_inbox(step):
+    ovbx.outgoing_headers.update(dict({'Accepts':'application/json'}))
+
+    # I could probably do this with urllib2
+
+    enc = base64.encodestring('%s:%s' % (Config.Web.username, 
+                                         Config.Web.password)).replace('\n', '')
+    ovbx.outgoing_headers.update(dict({"Authorization":"Basic %s" % enc}))   
+    
+    assert_open_and_read("%s/messages/inbox" % Config.Web.host)

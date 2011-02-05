@@ -55,12 +55,13 @@ Feature: OpenVBX SMS Applet
         When I handle a redirect
         I should see "Sms" is "Hello World!"
 
-        When I text "ping" to flow "36"
-        And I handle a redirect
-
+        When I clear my connection data
+        And I text "ping" to flow "36"
+        
+        When I handle a redirect
         Then I should see "Sms" is "pong"
 
-    Scenario: Inbox
-        Given I check the inbox
+    Scenario: SMS inbox, Flow 37
+        Given I text "Testing" to flow "37"
 
-        When I debug
+        When I handle a redirect

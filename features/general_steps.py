@@ -2,7 +2,6 @@ import urllib2
 import urllib
 import cookielib
 import subprocess
-import base64
 
 from lxml import etree
 from lettuce import after, step, before
@@ -95,34 +94,23 @@ def assert_open_and_read(url, expectData=True):
         ovbx.con.close()
         ovbx.con = None
     try:
-        if not ovbx.outgoing_data:
-            request = urllib2.Request(url)
-            if ovbx.outgoing_headers:
-                if len(ovbx.outgoing_headers) > 1:
-                    for header, value in ovbx.outgoing_headers.keys(), \
-                                         ovbx.outgoing_headers.values():
-                        request.add_header(header, value)
-                else:
+        request = urllib2.Request(url)
+        if ovbx.outgoing_headers:
+            if len(ovbx.outgoing_headers) > 1:
+                for header, value in ovbx.outgoing_headers.keys(), \
+                                    ovbx.outgoing_headers.values():
+                    request.add_header(header, value)
+            else:
                     request.add_header(ovbx.outgoing_headers.keys()[0],
                                        ovbx.outgoing_headers.values()[0])
-                ovbx.outgoing_headers = dict()
-            ovbx.con = ovbx.opener.open(request)
-            ovbx.current_url = url
-        else:
-            request = urllib2.Request(url)
-            if ovbx.outgoing_headers:
-                if len(ovbx.outgoing_headers) > 1:
-                    for header, value in ovbx.outgoing_headers.keys(), \
-                                         ovbx.outgoing_headers.values():
-                        request.add_header(header, value)
-                else:
-                    request.add_header(ovbx.outgoing_headers.keys()[0],
-                                       ovbx.outgoing_headers.values()[0])
-                ovbx.outgoing_headers = dict()
+            ovbx.outgoing_headers = dict()
+        if ovbx.outgoing_data:
             ovbx.con = ovbx.opener.open(request,
-                urllib.urlencode(ovbx.outgoing_data))
-            ovbx.current_url = url
+            urllib.urlencode(ovbx.outgoing_data))
             ovbx.outgoing_data = dict()
+        else:
+            ovbx.con = ovbx.opener.open(request)
+        ovbx.current_url = url
     except IOError as io_error:
         assert ovbx.con, "Error in opening %s: %s" % (io_error, url)
 
@@ -168,7 +156,7 @@ def i_should_see_blank_is_blank(step, element, value):
     for element in root.xpath('//%s' % element):
         if element.text == value:
             return
-        elif element.text.find(value):
+        elif element.text.find(value) is not -1:
             return
     assert False, 'No "%s" element with text: "%s"' % (element, value)
 
@@ -190,6 +178,7 @@ def i_debug (step):
     cookie_jar = ovbx.cj
     current_page = ovbx.current_page
     #root = etree.XML(ovbx.current_page)
+    o = ovbx
 
     for cookie in cookie_jar: # So we can see each cookie
         import pdb
@@ -256,7 +245,7 @@ def make_SMS_parameters():
     return dict({'SmsSid':'NOT_VALID',
                  'AccountSid':'NOT_VALID',
                  'From':'+15555555555',
-                 'To':'+15555555555',
+                 'To':'+15555555556',
                  'Body':'NOT_VALID'})
 
 
@@ -273,17 +262,25 @@ def i_text_blank(step, text, flow_number):
     ovbx.outgoing_data.update(make_SMS_parameters())
     flow_number = int(flow_number)
     page = "%s/twiml/applet/sms/%d/start" % (Config.Web.host, flow_number)
-    ovbx.outgoing_data.update(dict(Body=text))
+    ovbx.outgoing_data.update(dict({'Body':text}))
     assert_open_and_read(page)
+
 
 @step('I check the inbox')
 def i_check_the_inbox(step):
+    ovbx.outgoing_data.update(dict({"email":Config.Web.username,
+                                   "pw":Config.Web.password,
+                                   "login":"1"}))
+    assert_open_and_read("%s/auth/login?redirect=" % Config.Web.host)
+
     ovbx.outgoing_headers.update(dict({'Accept':'application/json'}))
 
-    auth_handler = urllib2.HTTPBasicAuthHandler()
-    auth_handler.add_password(None, Config.Web.host, Config.Web.username,
-    Config.Web.password)
-    opener = urllib2.build_opener(auth_handler)
-    urllib2.install_opener(opener)
-
     assert_open_and_read("%s/messages/inbox" % Config.Web.host)
+
+
+@step('I clear my connection data')
+def i_clear_my_connection_data(step):
+    global ovbx
+
+    ovbx = None
+    ovbx = OpenVBX_Connection()

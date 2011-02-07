@@ -51,7 +51,8 @@ def before_all():
     args = []
     temp_file = open(Config.MySQL.backup_file, 'w')
 
-    args = [Config.MySQL.dump_path, '-c', '-u', Config.MySQL.user]
+    args = [Config.MySQL.dump_path, '-c', '--ignore-table=%s.settings' %
+            Config.MySQL.database, '-u', Config.MySQL.user]
     if Config.MySQL.password:
         args += ['-p%s' % Config.MySQL.password]
     if Config.MySQL.host:

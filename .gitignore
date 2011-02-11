@@ -1,3 +1,5 @@
 *.pyc
 *.swp
 *.sql
+features/config.py
+newbackup

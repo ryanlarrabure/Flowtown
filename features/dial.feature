@@ -5,6 +5,7 @@ Feature: OpenVBX Dial Applet
 
         When I handle a redirect
         Then I should see "Number" is "15105555555"
+        Then I debug
 
         When I follow the action
 

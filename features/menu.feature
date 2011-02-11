@@ -9,6 +9,10 @@ Feature: OpenVBX Menu Applet
         When I handle a redirect
         Then I should see a "Gather" element
 
+        When I press "1"
+        
+        And I debug
+
     Scenario: Menu with 1 item, Flow 21
         Given I have accessed flow "21"
 

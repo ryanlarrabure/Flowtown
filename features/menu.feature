@@ -1,13 +1,13 @@
 Feature: OpenVBX Menu Applet
 
-    # The following scenario dies in menu/twiml.php, Line 18
-    # And in libraries/AppletInstance.php, 281
-
     Scenario: Menu with 0 item, Flow 20 
         Given I have accessed flow "20"
 
         When I handle a redirect
         Then I should see a "Gather" element
+
+        When I press "1"
+        Then I should see "Say" is "You selected an incorrect option."
 
     Scenario: Menu with 1 item, Flow 21
         Given I have accessed flow "21"

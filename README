@@ -1,0 +1,25 @@
+Flowtown
+
+This application is used to test applet flows and number provisioning in
+OpenVBX.
+
+Installation instructions:
+
+1.) Install the data file by dumping it into your OpenVBX database.
+        mysql -u databasename <  flowtown_data.sql
+
+2.) Set your configuration by editing features/config.py
+
+3.) Download the Selenium Python Client Driver from
+    http://seleniumhq.org/docs/appendix_installing_python_driver_client.html.
+    Take selenium.py from the package and place it in the features directory.
+
+Running instructions:
+
+From the Flowtown root directory type lettuce to run the scenarios.
+
+Requirements:
+
+    Lettuce
+    lxml
+    Selenium (for web tests)

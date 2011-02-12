@@ -41,7 +41,7 @@ Feature: OpenVBX Dial Applet
         Given I have accessed flow "6"
 
         When I handle a redirect
-        Then I should see "Number" is "12323456789"
+        Then I should see "Number" is "1232345678"
         When I set param "DialCallStatus" to "failed"
 
         When I follow the action
